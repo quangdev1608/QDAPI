@@ -529,15 +529,6 @@ Nếu bạn gặp vấn đề hoặc có câu hỏi:
 - Xem logs trong file `api_gateway.log`
 - Kiểm tra Admin Panel để xem trạng thái hệ thống
 
-## 🤝 Đóng góp
-
-Đóng góp được chào đón! Vui lòng:
-1. Fork dự án
-2. Tạo branch mới (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push lên branch (`git push origin feature/AmazingFeature`)
-5. Mở Pull Request
-
 ## 📝 Changelog
 
 ### Version 1.0.0
