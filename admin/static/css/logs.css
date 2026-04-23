@@ -1,0 +1,47 @@
+/* project-root/admin/static/css/logs.css */
+.terminal-card {
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--secondary);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  font-family: var(--font-mono);
+  overflow: hidden;
+  animation: fadeInUp 0.5s ease;
+}
+
+.terminal-line {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.terminal-line:hover {
+  background: rgba(0, 255, 229, 0.05);
+}
+
+.terminal-line .time { color: var(--muted); min-width: 150px; }
+.terminal-line .method { color: var(--primary); min-width: 60px; font-weight: bold; }
+.terminal-line .path { color: var(--text); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.terminal-line .status { color: var(--secondary); min-width: 50px; font-weight: bold; }
+.terminal-line .status.error { color: var(--accent); }
+.terminal-line .ms { color: var(--warn); min-width: 60px; text-align: right; }
+.terminal-line .key { color: var(--primary); opacity: 0.5; font-size: 0.65rem; min-width: 100px; text-align: right; }
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+@media (max-width: 768px) {
+  .terminal-line { flex-wrap: wrap; }
+  .terminal-line .path { flex: 100%; order: 2; margin-top: 4px; padding-left: 1rem; }
+  .terminal-line .key { flex: 100%; order: 3; text-align: left; padding-left: 1rem; margin-top: 4px; }
+}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('admin.static', filename='css/login.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="inner-page login-wrapper">
+  <div class="login-box">
+    <div class="login-title glitch-text" data-text="SYSTEM LOGIN">SYSTEM LOGIN</div>
+    <form method="post" action="{{ url_for('admin.login') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <div class="form-group">
+        <label class="form-label">USERNAME</label>
+        <input type="text" name="username" class="form-control" required autocomplete="off" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">PASSWORD</label>
+        <input type="password" name="password" class="form-control" required />
+      </div>
+      <button class="btn btn-primary w-100" type="submit">AUTHENTICATE</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

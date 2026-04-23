@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('admin.static', filename='css/index.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="inner-page">
+  <div class="page-header">
+    <span class="page-tag">// MODULE 00 // DASHBOARD</span>
+    <div class="page-title glitch-text" data-text="SYSTEM OVERVIEW">SYSTEM OVERVIEW</div>
+  </div>
+
+  <div class="hero-grid">
+    <div class="hero-stat">
+      <span class="stat-num">{{ total_keys }}</span>
+      <span class="stat-label">TOTAL API KEYS</span>
+    </div>
+    <div class="hero-stat">
+      <span class="stat-num">{{ total_requests }}</span>
+      <span class="stat-label">TOTAL REQUESTS</span>
+    </div>
+  </div>
+
+  <div class="section-title">REQUESTS MATRIX (24H)</div>
+  <div class="hero-stat" style="margin-bottom: 3rem;">
+    <canvas id="hourlyChart" height="90"></canvas>
+  </div>
+
+  <div class="section-title">LATEST LOGS</div>
+  <div style="overflow-x: auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>TIMESTAMP</th>
+          <th>METHOD</th>
+          <th>ENDPOINT</th>
+          <th>STATUS</th>
+          <th>LATENCY (MS)</th>
+          <th>CLIENT IP</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in latest_logs %}
+        <tr>
+          <td>{{ item.created_at }}</td>
+          <td>{{ item.method }}</td>
+          <td>{{ item.path }}</td>
+          <td>
+            {% if 200 <= item.status_code < 300 %}
+              <span class="badge green">{{ item.status_code }}</span>
+            {% elif 400 <= item.status_code < 600 %}
+              <span class="badge red">{{ item.status_code }}</span>
+            {% else %}
+              <span class="badge gray">{{ item.status_code }}</span>
+            {% endif %}
+          </td>
+          <td>{{ '%.2f'|format(item.processing_time_ms) }}</td>
+          <td>{{ item.client_ip or 'unknown' }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" style="text-align: center; color: var(--muted);">NO DATA LOGGED YET</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block page_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+  Chart.defaults.color = '#3a6060';
+  Chart.defaults.font.family = "'Share Tech Mono', monospace";
+  
+  const labels = {{ chart_labels | tojson }};
+  const values = {{ chart_values | tojson }};
+
+  new Chart(document.getElementById('hourlyChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Requests',
+        data: values,
+        backgroundColor: 'rgba(0, 255, 229, 0.2)',
+        borderColor: 'rgba(0, 255, 229, 1)',
+        borderWidth: 1,
+        hoverBackgroundColor: 'rgba(0, 255, 229, 0.4)',
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0 },
+          grid: { color: 'rgba(10, 48, 48, 0.5)' }
+        },
+        x: {
+          grid: { color: 'rgba(10, 48, 48, 0.5)' }
+        }
+      },
+      plugins: {
+        legend: { labels: { color: '#00ffe5' } }
+      }
+    }
+  });
+</script>
+{% endblock %}

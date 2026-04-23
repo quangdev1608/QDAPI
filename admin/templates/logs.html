@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('admin.static', filename='css/logs.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="inner-page">
+  <div class="page-header">
+    <span class="page-tag">// MODULE 02 // SYSTEM LOGS</span>
+    <div class="page-title glitch-text" data-text="REQUEST STREAM">REQUEST STREAM</div>
+  </div>
+
+  <div class="terminal-card">
+    <div class="section-title" style="margin-bottom: 1rem; color: var(--secondary); border-left-color: var(--secondary); font-family: var(--font-display); font-size: 1rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; text-shadow: var(--glow); border-left: 3px solid var(--secondary); padding-left: 0.5rem;">LATEST ACTIVITY</div>
+    {% for item in logs_items %}
+    <div class="terminal-line">
+      <span class="time">[{{ item.created_at.strftime('%Y-%m-%d %H:%M:%S') if item.created_at else item.created_at }}]</span>
+      <span class="method">{{ item.method }}</span>
+      <span class="path">{{ item.path }}</span>
+      <span class="status {% if item.status_code >= 400 %}error{% endif %}">{{ item.status_code }}</span>
+      <span class="ms">{{ '%.2f'|format(item.processing_time_ms) }}ms</span>
+      <span class="key">key: {{ item.api_key or 'anonymous' }}</span>
+      <span class="key">ip: {{ item.client_ip or 'unknown' }}</span>
+    </div>
+    {% else %}
+    <div class="terminal-line" style="justify-content: center;">NO LOGS DETECTED</div>
+    {% endfor %}
+  </div>
+  
+  <div class="pagination">
+    <a class="btn btn-secondary" href="{{ url_for('admin.logs', page=page+1) }}">LOAD MORE LOGS</a>
+  </div>
+</div>
+{% endblock %}

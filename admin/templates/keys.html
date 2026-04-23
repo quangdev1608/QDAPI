@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('admin.static', filename='css/keys.css') }}">
+<link rel="stylesheet" href="{{ url_for('admin.static', filename='css/index.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="inner-page">
+  <div class="page-header">
+    <span class="page-tag">// MODULE 01 // API KEYS</span>
+    <div class="page-title glitch-text" data-text="KEY MANAGEMENT">KEY MANAGEMENT</div>
+  </div>
+
+  <div class="key-form-card">
+    <div class="section-title" style="margin-bottom: 1rem;">GENERATE NEW KEY</div>
+    <form method="post" action="{{ url_for('admin.create_key') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <div class="key-form-row">
+        <div class="key-form-col form-group" style="margin-bottom: 0;">
+          <label class="form-label">KEY NAME</label>
+          <input type="text" name="name" class="form-control" required />
+        </div>
+        <div class="key-form-col form-group" style="margin-bottom: 0;">
+          <label class="form-label">NOTE</label>
+          <input type="text" name="note" class="form-control" />
+        </div>
+        <div class="key-form-col-small form-group" style="margin-bottom: 0;">
+          <label class="form-label">RATE LIMIT</label>
+          <input type="number" min="1" name="rate_limit_per_minute" class="form-control" value="100" required />
+        </div>
+        <div class="key-form-col-btn">
+          <button class="btn btn-primary" type="submit">GENERATE</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  {% if one_time_raw_key %}
+  <div class="key-form-card" style="margin-bottom: 1.25rem; border-color: #31f2a7;">
+    <div class="section-title" style="margin-bottom: .5rem;">NEW KEY (ONE-TIME VIEW)</div>
+    <p style="margin: 0 0 .5rem 0; color: var(--muted);">Hãy copy ngay, key này chỉ hiển thị đúng 1 lần.</p>
+    <div style="display: flex; gap: .5rem; align-items: center; flex-wrap: wrap;">
+      <input id="one-time-key" type="text" readonly value="{{ one_time_raw_key }}" class="form-control" style="max-width: 540px;" />
+      <button type="button" class="btn btn-secondary" onclick="navigator.clipboard.writeText(document.getElementById('one-time-key').value)">COPY</button>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="section-title">ACTIVE KEYS DATABASE</div>
+  <div style="overflow-x: auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>NAME</th>
+          <th>KEY FINGERPRINT</th>
+          <th>NOTE & LIMIT</th>
+          <th>STATUS</th>
+          <th style="text-align: right;">ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in key_items %}
+        <tr>
+          <td>{{ item.id }}</td>
+          <td style="font-weight: 700;">{{ item.name }}</td>
+          <td><span class="code-text">{{ item.key_value[:8] }}...{{ item.key_value[-4:] }}</span></td>
+          <td>
+            <form method="post" action="{{ url_for('admin.update_key', key_id=item.id) }}" class="inline-form">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <input type="text" name="note" value="{{ item.note or '' }}" class="form-control form-control-sm" placeholder="Note" style="width: 150px;" />
+              <input type="number" min="1" name="rate_limit_per_minute" value="{{ item.rate_limit_per_minute }}" class="form-control form-control-sm" style="width: 70px;" />
+              <button class="btn btn-sm btn-secondary" type="submit">SAVE</button>
+            </form>
+          </td>
+          <td>
+            {% if item.is_active %}
+              <span class="badge green">ACTIVE</span>
+            {% else %}
+              <span class="badge gray">INACTIVE</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="action-buttons">
+              <form method="post" action="{{ url_for('admin.toggle_key', key_id=item.id) }}" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button class="btn btn-sm btn-secondary" type="submit">TOGGLE</button>
+              </form>
+              <form method="post" action="{{ url_for('admin.delete_key', key_id=item.id) }}" class="inline-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+                <button class="btn btn-sm btn-danger" type="submit">DELETE</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6" style="text-align: center; color: var(--muted);">NO KEYS FOUND</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

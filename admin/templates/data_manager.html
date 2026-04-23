@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block page_css %}
+<link rel="stylesheet" href="{{ url_for('admin.static', filename='css/data_manager.css') }}">
+<link rel="stylesheet" href="{{ url_for('admin.static', filename='css/index.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="inner-page">
+  <div class="page-header">
+    <span class="page-tag">// MODULE 03 // DATA EXAMINER</span>
+    <div class="page-title glitch-text" data-text="DATA MANAGER">DATA MANAGER</div>
+  </div>
+
+  <div class="filter-card">
+    <div class="section-title" style="margin-bottom: 1rem;">DATA FILTERS</div>
+    <form method="get" action="{{ url_for('admin.data_manager') }}">
+      <div class="filter-row">
+        <div class="filter-col-search form-group" style="margin-bottom: 0;">
+          <input
+            type="text"
+            name="search"
+            class="form-control"
+            placeholder="Search by name / key / note"
+            value="{{ search }}"
+          />
+        </div>
+        <div class="filter-col-status form-group" style="margin-bottom: 0;">
+          <select name="status" class="form-control">
+            <option value="all" {% if status == 'all' %}selected{% endif %}>ALL STATUS</option>
+            <option value="active" {% if status == 'active' %}selected{% endif %}>ACTIVE</option>
+            <option value="inactive" {% if status == 'inactive' %}selected{% endif %}>INACTIVE</option>
+          </select>
+        </div>
+        <div class="filter-col-btn">
+          <button class="btn btn-primary" type="submit">EXECUTE QUERY</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="section-title">QUERY RESULTS</div>
+  <div style="overflow-x: auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>NAME</th>
+          <th>KEY FINGERPRINT</th>
+          <th>NOTE</th>
+          <th>RATE LIMIT</th>
+          <th>STATUS</th>
+          <th>CREATED AT</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data_rows %}
+        <tr>
+          <td>{{ row.id }}</td>
+          <td style="font-weight: 700;">{{ row.name }}</td>
+          <td><span style="font-family: var(--font-mono); color: var(--secondary);">{{ row.key_value[:8] }}...{{ row.key_value[-4:] }}</span></td>
+          <td>{{ row.note or '' }}</td>
+          <td>{{ row.rate_limit_per_minute }}</td>
+          <td>
+            {% if row.is_active %}
+              <span class="badge green">ACTIVE</span>
+            {% else %}
+              <span class="badge gray">INACTIVE</span>
+            {% endif %}
+          </td>
+          <td style="color: var(--muted); font-size: 0.65rem;">{{ row.created_at }}</td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" style="text-align: center; color: var(--muted);">NO RECORDS FOUND MATCHING QUERY</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
