@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+pymysql
+pydantic
+pydantic-settings
+flask
+flask-login
+werkzeug
+jinja2
+passlib[bcrypt]
+pyjwt
+email-validator
+redis
+flask-wtf
