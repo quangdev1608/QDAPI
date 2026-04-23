@@ -2,7 +2,6 @@
 
 [![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-green)](https://fastapi.tiangolo.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Hệ thống API Gateway được xây dựng với FastAPI, cung cấp các chức năng xác thực, quản lý người dùng, và routing cho các microservices.
 
@@ -515,10 +514,6 @@ Kiểm tra logs để debug:
 ```bash
 tail -f api_gateway.log
 ```
-
-## License
-
-[Your License Here]
 
 ---
 
