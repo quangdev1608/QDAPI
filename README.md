@@ -1,6 +1,46 @@
 # API Gateway Backend
 
+[![Python](https://img.shields.io/badge/Python-3.11%2B-blue)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-green)](https://fastapi.tiangolo.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 Hệ thống API Gateway được xây dựng với FastAPI, cung cấp các chức năng xác thực, quản lý người dùng, và routing cho các microservices.
+
+## 🚀 Quick Start
+
+Cách nhanh nhất để bắt đầu:
+
+```bash
+# 1. Chạy script cài đặt (tự động cài đặt tất cả)
+setup.bat
+
+# 2. Đảm bảo MySQL đang chạy và databases đã được tạo
+#    - project_api_quangdev
+#    - project_quangdev
+
+# 3. Chạy ứng dụng
+run.bat
+
+# 4. Truy cập:
+#    - API Gateway: http://localhost:5000
+#    - Admin Panel: http://localhost:8080 (user: admin / pass: admin123)
+```
+
+## 📑 Mục lục
+
+- [Tính năng chính](#tính-năng-chính)
+- [Cấu trúc dự án](#cấu-trúc-dự-án)
+- [Cài đặt](#cài-đặt)
+- [Chạy ứng dụng](#chạy-ứng-dụng)
+- [API Endpoints](#api-endpoints)
+- [Hướng dẫn tích hợp](#hướng-dẫn-tích-hợp)
+- [Security Best Practices](#security-best-practices)
+- [Troubleshooting](#troubleshooting)
+- [Admin Panel](#admin-panel)
+- [Logging](#logging)
+- [Hỗ trợ](#hỗ-trợ)
+- [Đóng góp](#đóng-góp)
+- [Changelog](#changelog)
 
 ## Tính năng chính
 
@@ -47,14 +87,24 @@ cd project-root
 ```
 
 ### 2. Cài đặt Python dependencies
+
+**Cách 1: Sử dụng script cài đặt (Khuyên dùng)**
+```bash
+setup.bat
+```
+
+Script này sẽ tự động:
+- Tạo virtual environment (.venv)
+- Cài đặt tất cả dependencies
+- Copy `.env.example` sang `.env` (nếu chưa có)
+- **Tự động generate các secret keys ngẫu nhiên và an toàn**
+
+**Cách 2: Cài đặt thủ công**
 ```bash
 pip install -r requirements.txt
 ```
 
-Hoặc sử dụng script cài đặt:
-```bash
-setup.bat
-```
+Sau đó phải cấu hình thủ công file `.env` (xem phần bên dưới)
 
 ### 3. Cấu hình Database
 
@@ -75,7 +125,9 @@ mysql -u root -p < dataproject.sql
 
 ### 4. Cấu hình Environment Variables
 
-Sửa file `.env` và cập nhật các thông số sau:
+**⚠️ Quan trọng:** File `.env.example` là template và KHÔNG nên sửa trực tiếp. Script `setup.bat` sẽ tự động copy nó sang `.env` và điền các secret keys.
+
+Nếu bạn đã chạy `setup.bat`, file `.env` đã được tạo tự động với các secret keys ngẫu nhiên. Bạn chỉ cần kiểm tra và cập nhật các thông tin sau nếu cần:
 
 ```env
 # Database Configuration
@@ -97,15 +149,19 @@ ADMIN_USERNAME=admin
 ADMIN_PASSWORD=admin123
 
 # Security Configuration
-ADMIN_SECRET_KEY=<your-secret-key>
-FLASK_SESSION_SECRET=<your-secret-key>
-JWT_SIGNING_SECRET=<your-secret-key>
+ADMIN_SECRET_KEY=<đã được tự động generate bởi setup.bat>
+FLASK_SESSION_SECRET=<đã được tự động generate bởi setup.bat>
+JWT_SIGNING_SECRET=<đã được tự động generate bởi setup.bat>
 
 # Logging Configuration
 LOG_FILE_PATH=api_gateway.log
 ```
 
-**Lưu ý**: Thay đổi các secret key trong môi trường production!
+**⚠️ Lưu ý quan trọng:**
+- Nếu cài đặt thủ công (không dùng setup.bat), bạn PHẢI điền 3 secret keys trên
+- Các secret keys đã được generate tự động là an toàn cho development
+- Trong môi trường production, nên sử dụng các secret keys mạnh hơn và bảo mật
+- **KHÔNG bao giờ commit file `.env` vào version control** (nên thêm `.env` vào `.gitignore`)
 
 ## Chạy ứng dụng
 
@@ -392,13 +448,64 @@ Kiểm tra:
 
 ## Admin Panel
 
-Truy cập admin panel tại `http://localhost:8080`
+Admin Panel là giao diện quản trị dựa trên Flask giúp bạn quản lý hệ thống API Gateway một cách trực quan.
 
-**Default credentials:**
-- Username: `admin`
-- Password: `admin123`
+### Truy cập Admin Panel
 
-**Lưu ý:** Thay đổi password mặc định sau lần đăng nhập đầu tiên!
+- **URL**: `http://localhost:8080`
+- **Default credentials:**
+  - Username: `admin`
+  - Password: `admin123`
+
+**⚠️ Lưu ý:** Thay đổi password mặc định sau lần đăng nhập đầu tiên!
+
+### Giao diện Admin Panel
+
+#### 1. Trang Đăng nhập
+![Trang đăng nhập Admin Panel](image/login.png)
+
+#### 2. Trang chủ (Dashboard)
+![Trang chủ Admin Panel](image/home.png)
+
+Dashboard hiển thị tổng quan về hệ thống:
+- Thống kê requests
+- Trạng thái các dịch vụ
+- Thông tin hệ thống
+
+#### 3. Quản lý API Keys
+![Quản lý API Keys](image/apikey.png)
+
+Tại đây bạn có thể:
+- Xem danh sách API keys đang hoạt động
+- Thêm API key mới
+- Xóa hoặc vô hiệu hóa API key
+- Xem lịch sử sử dụng của từng key
+
+#### 4. Quản lý Dữ liệu
+![Quản lý Dữ liệu](image/data.png)
+
+Quản lý dữ liệu hệ thống:
+- Xem và quản lý users
+- Quản lý permissions
+- Xem thống kê dữ liệu
+
+#### 5. Xem Logs
+![Xem Logs hệ thống](image/logs.png)
+
+Theo dõi và quản lý logs:
+- Xem logs real-time
+- Lọc logs theo level (INFO, WARNING, ERROR)
+- Tìm kiếm logs
+- Export logs
+
+### Tính năng Admin Panel
+
+- **Dashboard**: Tổng quan hệ thống và thống kê
+- **API Key Management**: Quản lý các API keys cho truy cập
+- **User Management**: Quản lý người dùng và permissions
+- **Logs Viewer**: Xem và filter logs hệ thống
+- **System Monitoring**: Theo dõi trạng thái các services
+- **Configuration**: Cấu hình hệ thống
 
 ## Logging
 
@@ -412,3 +519,32 @@ tail -f api_gateway.log
 ## License
 
 [Your License Here]
+
+---
+
+## 📞 Hỗ trợ
+
+Nếu bạn gặp vấn đề hoặc có câu hỏi:
+- Kiểm tra section [Troubleshooting](#troubleshooting)
+- Xem logs trong file `api_gateway.log`
+- Kiểm tra Admin Panel để xem trạng thái hệ thống
+
+## 🤝 Đóng góp
+
+Đóng góp được chào đón! Vui lòng:
+1. Fork dự án
+2. Tạo branch mới (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push lên branch (`git push origin feature/AmazingFeature`)
+5. Mở Pull Request
+
+## 📝 Changelog
+
+### Version 1.0.0
+- Phiên bản đầu tiên
+- JWT Authentication
+- User Management
+- Admin Panel
+- API Key Management
+- Logging System
+- Rate Limiting
